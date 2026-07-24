@@ -68,7 +68,8 @@ function displayTrackInfo(track) {
 
 function resolveTrackUrl(filePath) {
   const normalizedPath = (filePath || '').replace(/^\/+/, '');
-  return `/songs/${normalizedPath}`;
+  const repoBase = 'https://lillyr1002.github.io/Birthday-Playlist';
+  return `${repoBase}/songs/${normalizedPath}`;
 }
 
 function renderPlaylist() {
