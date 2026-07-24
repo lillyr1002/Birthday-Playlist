@@ -15,6 +15,19 @@ const emptyState = document.getElementById('emptyState');
 const tracks = [];
 let currentIndex = -1;
 
+const publicFiles = [
+  '1323436_Creo---In-Synergy.mp3',
+  '1362038_Creo---Mantarave.mp3',
+  'creo-aurora-128-ytshorts.savetube.me.mp3',
+  'creo-ballistic-funk-128-ytshorts.savetube.me.mp3',
+  'creo-crazy-128-ytshorts.savetube.me.mp3',
+  'creo-high-tide-128-ytshorts.savetube.me.mp3',
+  'creo-lightmare-128-ytshorts.savetube.me.mp3',
+  'creo-red-haze-128-ytshorts.savetube.me.mp3',
+  'creo-rock-thing-128-ytshorts.savetube.me.mp3',
+  'creo-we-can-dream-128-ytshorts.savetube.me.mp3'
+];
+
 function formatTime(seconds) {
   if (!Number.isFinite(seconds) || seconds < 0) {
     return '0:00';
@@ -169,36 +182,19 @@ function buildTracks(files) {
   });
 }
 
-async function loadTracksFromServer() {
-  try {
-    const response = await fetch('/api/audio');
-    const data = await response.json();
+function loadTracksFromServer() {
+  buildTracks(publicFiles);
 
-    data.files.forEach((filePath) => {
-      const title = getDisplayTitle(filePath);
-      tracks.push({
-        title,
-        url: resolveTrackUrl(filePath),
-        type: filePath.toLowerCase().endsWith('.mp3') ? 'MP3' : 'Audio'
-      });
-    });
-
-    if (!tracks.length) {
-      trackTitle.textContent = 'No music found';
-      trackMeta.textContent = 'Add some audio files to this folder and refresh the page.';
-      emptyState.hidden = false;
-      emptyState.textContent = 'No music files found in the folder yet.';
-    } else {
-      loadTrack(0);
-    }
-
-    renderPlaylist();
-  } catch (error) {
-    trackTitle.textContent = 'Unable to load music';
-    trackMeta.textContent = 'Please refresh the page or check the server.';
+  if (!tracks.length) {
+    trackTitle.textContent = 'No music found';
+    trackMeta.textContent = 'Add some audio files to this folder and refresh the page.';
     emptyState.hidden = false;
-    emptyState.textContent = 'Unable to load the playlist right now.';
+    emptyState.textContent = 'No music files found in the folder yet.';
+  } else {
+    loadTrack(0);
   }
+
+  renderPlaylist();
 }
 
 playPauseBtn.addEventListener('click', playPause);
