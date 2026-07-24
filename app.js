@@ -15,6 +15,19 @@ const emptyState = document.getElementById('emptyState');
 const tracks = [];
 let currentIndex = -1;
 
+const bundledFiles = [
+  '1323436_Creo---In-Synergy.mp3',
+  '1362038_Creo---Mantarave.mp3',
+  'creo-aurora-128-ytshorts.savetube.me.mp3',
+  'creo-ballistic-funk-128-ytshorts.savetube.me.mp3',
+  'creo-crazy-128-ytshorts.savetube.me.mp3',
+  'creo-high-tide-128-ytshorts.savetube.me.mp3',
+  'creo-lightmare-128-ytshorts.savetube.me.mp3',
+  'creo-red-haze-128-ytshorts.savetube.me.mp3',
+  'creo-rock-thing-128-ytshorts.savetube.me.mp3',
+  'creo-we-can-dream-128-ytshorts.savetube.me.mp3'
+];
+
 function formatTime(seconds) {
   if (!Number.isFinite(seconds) || seconds < 0) {
     return '0:00';
@@ -156,48 +169,55 @@ function playPrevious() {
   playTrack(prevIndex);
 }
 
+function buildTracks(files) {
+  tracks.length = 0;
+
+  files.forEach((filePath) => {
+    const title = getDisplayTitle(filePath);
+    tracks.push({
+      title,
+      url: resolveTrackUrl(filePath),
+      type: filePath.toLowerCase().endsWith('.mp3') ? 'MP3' : 'Audio'
+    });
+  });
+}
+
 async function loadTracksFromServer() {
-  const sources = ['/api/audio', './playlist.json'];
-
-  for (const source of sources) {
-    try {
-      const response = await fetch(source);
-      if (!response.ok) {
-        continue;
-      }
-
+  try {
+    const response = await fetch('/api/audio');
+    if (response.ok) {
       const data = await response.json();
       const files = Array.isArray(data) ? data : (data.files || []);
-
-      files.forEach((filePath) => {
-        const title = getDisplayTitle(filePath);
-        tracks.push({
-          title,
-          url: resolveTrackUrl(filePath),
-          type: filePath.toLowerCase().endsWith('.mp3') ? 'MP3' : 'Audio'
-        });
-      });
-
-      if (!tracks.length) {
-        trackTitle.textContent = 'No music found';
-        trackMeta.textContent = 'Add some audio files to this folder and refresh the page.';
-        emptyState.hidden = false;
-        emptyState.textContent = 'No music files found in the folder yet.';
-      } else {
-        loadTrack(0);
+      if (files.length) {
+        buildTracks(files);
+        if (!tracks.length) {
+          trackTitle.textContent = 'No music found';
+          trackMeta.textContent = 'Add some audio files to this folder and refresh the page.';
+          emptyState.hidden = false;
+          emptyState.textContent = 'No music files found in the folder yet.';
+        } else {
+          loadTrack(0);
+        }
+        renderPlaylist();
+        return;
       }
-
-      renderPlaylist();
-      return;
-    } catch (error) {
-      continue;
     }
+  } catch (error) {
+    // Fall back to bundled files for static hosting.
   }
 
-  trackTitle.textContent = 'Unable to load music';
-  trackMeta.textContent = 'Please refresh the page or check the server.';
-  emptyState.hidden = false;
-  emptyState.textContent = 'Unable to load the playlist right now.';
+  buildTracks(bundledFiles);
+
+  if (!tracks.length) {
+    trackTitle.textContent = 'No music found';
+    trackMeta.textContent = 'Add some audio files to this folder and refresh the page.';
+    emptyState.hidden = false;
+    emptyState.textContent = 'No music files found in the folder yet.';
+  } else {
+    loadTrack(0);
+  }
+
+  renderPlaylist();
 }
 
 playPauseBtn.addEventListener('click', playPause);
