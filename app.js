@@ -104,6 +104,8 @@ function renderPlaylist() {
     item.addEventListener('click', () => playTrack(index));
     playlistEl.appendChild(item);
   });
+
+  console.log('Rendered tracks:', tracks.map((track) => track.url));
 }
 
 function loadTrack(index) {
@@ -115,6 +117,7 @@ function loadTrack(index) {
   const track = tracks[index];
   displayTrackInfo(track);
   audio.src = track.url;
+  console.log('Loading track:', track.url);
   audio.load();
   renderPlaylist();
   playPauseBtn.textContent = '▶ Play';
@@ -207,6 +210,7 @@ async function loadTracksFromServer() {
   }
 
   buildTracks(bundledFiles);
+  renderPlaylist();
 
   if (!tracks.length) {
     trackTitle.textContent = 'No music found';
