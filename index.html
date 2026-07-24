@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Birthday Playlist</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <div class="flower one"></div>
+      <div class="flower two"></div>
+      <div class="flower three"></div>
+      <div class="flower four"></div>
+      <div class="flower five"></div>
+      <div class="flower six"></div>
+      <div class="flower seven"></div>
+      <div class="flower eight"></div>
+      <div class="flower nine"></div>
+      <div class="flower ten"></div>
+      <div class="flower eleven"></div>
+      <div class="flower twelve"></div>
+      <div class="flower yellow thirteen"></div>
+      <div class="flower yellow fourteen"></div>
+      <div class="flower yellow fifteen"></div>
+      <div class="flower yellow sixteen"></div>
+      <div class="flower yellow seventeen"></div>
+      <div class="flower yellow eighteen"></div>
+      <div class="flower yellow nineteen"></div>
+      <div class="flower yellow twenty"></div>
+      <div class="flower yellow twentyone"></div>
+      <div class="flower yellow twentytwo"></div>
+      <div class="flower yellow twentythree"></div>
+      <div class="flower yellow twentyfour"></div>
+      <div class="flower yellow twentyfive"></div>
+      <div class="flower yellow twentysix"></div>
+      <div class="flower yellow twentyseven"></div>
+      <div class="flower yellow twentyeight"></div>
+      <div class="flower yellow twentynine"></div>
+      <div class="flower yellow thirty"></div>
+
+      <section class="player-card">
+        <div class="track-info">
+          <p class="eyebrow">Now playing</p>
+          <h2 id="trackTitle">Loading your soundtrack…</h2>
+          <p id="trackMeta">Your birthday playlist is almost ready.</p>
+        </div>
+
+        <audio id="audio" preload="metadata"></audio>
+
+        <div class="controls">
+          <button id="prevBtn" aria-label="Previous track">⏮</button>
+          <button id="playPauseBtn" class="primary-btn" aria-label="Play or pause">▶ Play</button>
+          <button id="nextBtn" aria-label="Next track">⏭</button>
+        </div>
+
+        <div class="progress-row">
+          <span id="currentTime">0:00</span>
+          <input id="seekBar" type="range" min="0" max="100" value="0" step="0.1" />
+          <span id="duration">0:00</span>
+        </div>
+
+        <div class="volume-row">
+          <label for="volumeRange">Volume</label>
+          <input id="volumeRange" type="range" min="0" max="1" step="0.05" value="1" />
+        </div>
+      </section>
+
+      <section class="playlist-card">
+        <div class="playlist-header">
+          <h3>Playlist</h3>
+          <span id="playlistCount" class="pill">0 tracks</span>
+        </div>
+        <p id="emptyState" class="empty-state">Looking for music files…</p>
+        <ul id="playlist" class="playlist"></ul>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
