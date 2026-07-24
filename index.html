@@ -42,38 +42,34 @@
       <section class="player-card">
         <div class="track-info">
           <p class="eyebrow">Now playing</p>
-          <h2 id="trackTitle">Loading your soundtrack…</h2>
-          <p id="trackMeta">Your birthday playlist is almost ready.</p>
+          <h2 id="trackTitle">Birthday Playlist</h2>
+          <p id="trackMeta">Tap play to start the music.</p>
         </div>
 
-        <audio id="audio" preload="auto"></audio>
+        <audio id="audio" controls preload="auto">
+          <source src="https://lillyr1002.github.io/Birthday-Playlist/songs/1323436_Creo---In-Synergy.mp3" type="audio/mpeg" />
+          Your browser does not support the audio element.
+        </audio>
 
-        <div class="controls">
-          <button id="prevBtn" aria-label="Previous track">⏮</button>
-          <button id="playPauseBtn" class="primary-btn" aria-label="Play or pause">▶ Play</button>
-          <button id="nextBtn" aria-label="Next track">⏭</button>
-        </div>
-
-        <div class="progress-row">
-          <span id="currentTime">0:00</span>
-          <input id="seekBar" type="range" min="0" max="100" value="0" step="0.1" />
-          <span id="duration">0:00</span>
-        </div>
-
-        <div class="volume-row">
-          <label for="volumeRange">Volume</label>
-          <input id="volumeRange" type="range" min="0" max="1" step="0.05" value="1" />
+        <div class="playlist-card inline-playlist">
+          <div class="playlist-header">
+            <h3>Playlist</h3>
+          </div>
+          <ul class="playlist">
+            <li><a href="https://lillyr1002.github.io/Birthday-Playlist/songs/1323436_Creo---In-Synergy.mp3">In Synergy By Creo</a></li>
+            <li><a href="https://lillyr1002.github.io/Birthday-Playlist/songs/1362038_Creo---Mantarave.mp3">Mantarave By Creo</a></li>
+            <li><a href="https://lillyr1002.github.io/Birthday-Playlist/songs/creo-aurora-128-ytshorts.savetube.me.mp3">Aurora By Creo</a></li>
+            <li><a href="https://lillyr1002.github.io/Birthday-Playlist/songs/creo-ballistic-funk-128-ytshorts.savetube.me.mp3">Ballistic Funk By Creo</a></li>
+            <li><a href="https://lillyr1002.github.io/Birthday-Playlist/songs/creo-crazy-128-ytshorts.savetube.me.mp3">Crazy By Creo</a></li>
+            <li><a href="https://lillyr1002.github.io/Birthday-Playlist/songs/creo-high-tide-128-ytshorts.savetube.me.mp3">High Tide By Creo</a></li>
+            <li><a href="https://lillyr1002.github.io/Birthday-Playlist/songs/creo-lightmare-128-ytshorts.savetube.me.mp3">Lightmare By Creo</a></li>
+            <li><a href="https://lillyr1002.github.io/Birthday-Playlist/songs/creo-red-haze-128-ytshorts.savetube.me.mp3">Red Haze By Creo</a></li>
+            <li><a href="https://lillyr1002.github.io/Birthday-Playlist/songs/creo-rock-thing-128-ytshorts.savetube.me.mp3">Rock Thing By Creo</a></li>
+            <li><a href="https://lillyr1002.github.io/Birthday-Playlist/songs/creo-we-can-dream-128-ytshorts.savetube.me.mp3">We Can Dream By Creo</a></li>
+          </ul>
         </div>
       </section>
 
-      <section class="playlist-card">
-        <div class="playlist-header">
-          <h3>Playlist</h3>
-          <span id="playlistCount" class="pill">0 tracks</span>
-        </div>
-        <p id="emptyState" class="empty-state">Looking for music files…</p>
-        <ul id="playlist" class="playlist"></ul>
-      </section>
     </main>
 
     <script src="app.js"></script>
