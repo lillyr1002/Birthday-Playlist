@@ -14,6 +14,7 @@ const emptyState = document.getElementById('emptyState');
 
 const tracks = [];
 let currentIndex = -1;
+let pendingPlay = false;
 
 const publicFiles = [
   '1323436_Creo---In-Synergy.mp3',
@@ -79,6 +80,21 @@ function displayTrackInfo(track) {
   trackMeta.textContent = `Playing • ${track.title}`;
 }
 
+function updatePlaybackButton(isPlaying) {
+  playPauseBtn.textContent = isPlaying ? '⏸ Pause' : '▶ Play';
+}
+
+function handleAudioCanPlay() {
+  if (!pendingPlay) {
+    return;
+  }
+
+  pendingPlay = false;
+  audio.play()
+    .then(() => updatePlaybackButton(true))
+    .catch(() => updatePlaybackButton(false));
+}
+
 function resolveTrackUrl(filePath) {
   const normalizedPath = (filePath || '').replace(/^\/+/, '');
   const repoBase = 'https://lillyr1002.github.io/Birthday-Playlist';
@@ -114,10 +130,12 @@ function loadTrack(index) {
   currentIndex = index;
   const track = tracks[index];
   displayTrackInfo(track);
+  audio.pause();
+  audio.currentTime = 0;
   audio.src = track.url;
   audio.load();
   renderPlaylist();
-  playPauseBtn.textContent = '▶ Play';
+  updatePlaybackButton(false);
 }
 
 function playTrack(index) {
@@ -129,10 +147,13 @@ function playTrack(index) {
     loadTrack(index);
   }
 
-  audio.play().catch(() => {
-    playPauseBtn.textContent = '▶ Play';
-  });
-  playPauseBtn.textContent = '⏸ Pause';
+  pendingPlay = true;
+
+  if (audio.readyState >= 2) {
+    handleAudioCanPlay();
+  } else {
+    audio.load();
+  }
 }
 
 function playPause() {
@@ -141,13 +162,16 @@ function playPause() {
   }
 
   if (audio.paused) {
-    audio.play().catch(() => {
-      playPauseBtn.textContent = '▶ Play';
-    });
-    playPauseBtn.textContent = '⏸ Pause';
+    pendingPlay = true;
+
+    if (audio.readyState >= 2) {
+      handleAudioCanPlay();
+    } else {
+      audio.load();
+    }
   } else {
     audio.pause();
-    playPauseBtn.textContent = '▶ Play';
+    updatePlaybackButton(false);
   }
 }
 
@@ -231,11 +255,18 @@ audio.addEventListener('loadedmetadata', () => {
 audio.addEventListener('ended', playNext);
 
 audio.addEventListener('play', () => {
-  playPauseBtn.textContent = '⏸ Pause';
+  updatePlaybackButton(true);
 });
 
 audio.addEventListener('pause', () => {
-  playPauseBtn.textContent = '▶ Play';
+  updatePlaybackButton(false);
 });
+
+audio.addEventListener('error', () => {
+  trackMeta.textContent = 'This track could not be loaded. Please try again.';
+  updatePlaybackButton(false);
+});
+
+audio.addEventListener('canplay', handleAudioCanPlay);
 
 loadTracksFromServer();
