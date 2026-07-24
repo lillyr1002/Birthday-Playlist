@@ -15,19 +15,6 @@ const emptyState = document.getElementById('emptyState');
 const tracks = [];
 let currentIndex = -1;
 
-const bundledFiles = [
-  '1323436_Creo---In-Synergy.mp3',
-  '1362038_Creo---Mantarave.mp3',
-  'creo-aurora-128-ytshorts.savetube.me.mp3',
-  'creo-ballistic-funk-128-ytshorts.savetube.me.mp3',
-  'creo-crazy-128-ytshorts.savetube.me.mp3',
-  'creo-high-tide-128-ytshorts.savetube.me.mp3',
-  'creo-lightmare-128-ytshorts.savetube.me.mp3',
-  'creo-red-haze-128-ytshorts.savetube.me.mp3',
-  'creo-rock-thing-128-ytshorts.savetube.me.mp3',
-  'creo-we-can-dream-128-ytshorts.savetube.me.mp3'
-];
-
 function formatTime(seconds) {
   if (!Number.isFinite(seconds) || seconds < 0) {
     return '0:00';
@@ -81,8 +68,7 @@ function displayTrackInfo(track) {
 
 function resolveTrackUrl(filePath) {
   const normalizedPath = (filePath || '').replace(/^\/+/, '');
-  const songPath = normalizedPath.startsWith('songs/') ? normalizedPath : `songs/${normalizedPath}`;
-  return new URL(songPath, window.location.href).toString();
+  return `/songs/${normalizedPath}`;
 }
 
 function renderPlaylist() {
@@ -104,8 +90,6 @@ function renderPlaylist() {
     item.addEventListener('click', () => playTrack(index));
     playlistEl.appendChild(item);
   });
-
-  console.log('Rendered tracks:', tracks.map((track) => track.url));
 }
 
 function loadTrack(index) {
@@ -117,7 +101,6 @@ function loadTrack(index) {
   const track = tracks[index];
   displayTrackInfo(track);
   audio.src = track.url;
-  console.log('Loading track:', track.url);
   audio.load();
   renderPlaylist();
   playPauseBtn.textContent = '▶ Play';
@@ -188,40 +171,33 @@ function buildTracks(files) {
 async function loadTracksFromServer() {
   try {
     const response = await fetch('/api/audio');
-    if (response.ok) {
-      const data = await response.json();
-      const files = Array.isArray(data) ? data : (data.files || []);
-      if (files.length) {
-        buildTracks(files);
-        if (!tracks.length) {
-          trackTitle.textContent = 'No music found';
-          trackMeta.textContent = 'Add some audio files to this folder and refresh the page.';
-          emptyState.hidden = false;
-          emptyState.textContent = 'No music files found in the folder yet.';
-        } else {
-          loadTrack(0);
-        }
-        renderPlaylist();
-        return;
-      }
+    const data = await response.json();
+
+    data.files.forEach((filePath) => {
+      const title = getDisplayTitle(filePath);
+      tracks.push({
+        title,
+        url: resolveTrackUrl(filePath),
+        type: filePath.toLowerCase().endsWith('.mp3') ? 'MP3' : 'Audio'
+      });
+    });
+
+    if (!tracks.length) {
+      trackTitle.textContent = 'No music found';
+      trackMeta.textContent = 'Add some audio files to this folder and refresh the page.';
+      emptyState.hidden = false;
+      emptyState.textContent = 'No music files found in the folder yet.';
+    } else {
+      loadTrack(0);
     }
+
+    renderPlaylist();
   } catch (error) {
-    // Fall back to bundled files for static hosting.
-  }
-
-  buildTracks(bundledFiles);
-  renderPlaylist();
-
-  if (!tracks.length) {
-    trackTitle.textContent = 'No music found';
-    trackMeta.textContent = 'Add some audio files to this folder and refresh the page.';
+    trackTitle.textContent = 'Unable to load music';
+    trackMeta.textContent = 'Please refresh the page or check the server.';
     emptyState.hidden = false;
-    emptyState.textContent = 'No music files found in the folder yet.';
-  } else {
-    loadTrack(0);
+    emptyState.textContent = 'Unable to load the playlist right now.';
   }
-
-  renderPlaylist();
 }
 
 playPauseBtn.addEventListener('click', playPause);
