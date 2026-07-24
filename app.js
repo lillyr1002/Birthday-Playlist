@@ -66,6 +66,12 @@ function displayTrackInfo(track) {
   trackMeta.textContent = `Playing • ${track.title}`;
 }
 
+function resolveTrackUrl(filePath) {
+  const normalizedPath = (filePath || '').replace(/^\/+/, '');
+  const songPath = normalizedPath.startsWith('songs/') ? normalizedPath : `songs/${normalizedPath}`;
+  return new URL(songPath, window.location.href).toString();
+}
+
 function renderPlaylist() {
   playlistEl.innerHTML = '';
 
@@ -151,35 +157,47 @@ function playPrevious() {
 }
 
 async function loadTracksFromServer() {
-  try {
-    const response = await fetch('/api/audio');
-    const data = await response.json();
+  const sources = ['/api/audio', './playlist.json'];
 
-    data.files.forEach((filePath) => {
-      const title = getDisplayTitle(filePath);
-      tracks.push({
-        title,
-        url: `/songs/${filePath}`,
-        type: filePath.toLowerCase().endsWith('.mp3') ? 'MP3' : 'Audio'
+  for (const source of sources) {
+    try {
+      const response = await fetch(source);
+      if (!response.ok) {
+        continue;
+      }
+
+      const data = await response.json();
+      const files = Array.isArray(data) ? data : (data.files || []);
+
+      files.forEach((filePath) => {
+        const title = getDisplayTitle(filePath);
+        tracks.push({
+          title,
+          url: resolveTrackUrl(filePath),
+          type: filePath.toLowerCase().endsWith('.mp3') ? 'MP3' : 'Audio'
+        });
       });
-    });
 
-    if (!tracks.length) {
-      trackTitle.textContent = 'No music found';
-      trackMeta.textContent = 'Add some audio files to this folder and refresh the page.';
-      emptyState.hidden = false;
-      emptyState.textContent = 'No music files found in the folder yet.';
-    } else {
-      loadTrack(0);
+      if (!tracks.length) {
+        trackTitle.textContent = 'No music found';
+        trackMeta.textContent = 'Add some audio files to this folder and refresh the page.';
+        emptyState.hidden = false;
+        emptyState.textContent = 'No music files found in the folder yet.';
+      } else {
+        loadTrack(0);
+      }
+
+      renderPlaylist();
+      return;
+    } catch (error) {
+      continue;
     }
-
-    renderPlaylist();
-  } catch (error) {
-    trackTitle.textContent = 'Unable to load music';
-    trackMeta.textContent = 'Please refresh the page or check the server.';
-    emptyState.hidden = false;
-    emptyState.textContent = 'Unable to load the playlist right now.';
   }
+
+  trackTitle.textContent = 'Unable to load music';
+  trackMeta.textContent = 'Please refresh the page or check the server.';
+  emptyState.hidden = false;
+  emptyState.textContent = 'Unable to load the playlist right now.';
 }
 
 playPauseBtn.addEventListener('click', playPause);
